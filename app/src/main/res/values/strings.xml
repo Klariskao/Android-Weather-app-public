@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Test</string>
+    <string name="dash">-</string>
+    <string name="details">DETAILS</string>
+    <string name="hourly">HOURLY</string>
+    <string name="daily">DAILY</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="uv_index">UV index</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind">Wind</string>
+    <string name="location_icon">Location icon</string>
+    <string name="f">°F</string>
+    <string name="c">°C</string>
+    <string name="icon">icon</string>
+</resources>
