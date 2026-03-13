@@ -3,7 +3,7 @@ package com.example.test
 import java.net.URL
 
 class Geo {
-    private val key:String = "&key=0826219a14f94bfbb49a56b9902f31e8"
+    private val key:String = "&key=9dac5e97ac964493a86ec434f622eb48"
     private val url:String = "https://api.opencagedata.com/geocode/v1/json"
 
     fun makeUrl(place: String):String {
@@ -11,6 +11,7 @@ class Geo {
     }
 
     fun makeRequest(url:String):String {
+        println(url)
         return URL(url).readText()
     }
 }

@@ -12,38 +12,65 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-class DailyAdapter(private val result2: JsonObject, private val timeZone: String) : RecyclerView.Adapter<DailyAdapter.ViewHolder>() {
+class DailyAdapter(private val forecast: JsonObject, private val timeZone: String) :
+    RecyclerView.Adapter<DailyAdapter.ViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.daily_view, parent, false)
         return ViewHolder(view)
     }
 
-    override fun getItemCount() = 6
+    override fun getItemCount() = 5   // forecast API realistically supports ~5 days
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(result2, timeZone, position)
+        holder.bind(forecast, timeZone, position)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(result2: JsonObject, timeZone: String, position: Int) {
-            val images = arrayOf(R.drawable.a01d, R.drawable.a01n, R.drawable.a02d, R.drawable.a02n, R.drawable.a03d,
-                R.drawable.a03n, R.drawable.a04d, R.drawable.a04n, R.drawable.a09d, R.drawable.a09n, R.drawable.a10d,
-                R.drawable.a10n, R.drawable.a11d, R.drawable.a11n, R.drawable.a13d, R.drawable.a13n, R.drawable.a50d,
-                R.drawable.a50n)
-            val indexes = arrayOf("01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n", "09d", "09n", "10d", "10n",
-                "11d", "11n", "13d", "13n", "50d", "50n")
 
-            itemView.findViewById<TextView>(R.id.hourView).text = dateTime(result2.lookup<Int>("daily.dt")[position + 1], timeZone)
+        fun bind(forecast: JsonObject, timeZone: String, position: Int) {
 
-            val uri = result2.lookup<String>("daily.weather.icon")[position + 1]
-            itemView.findViewById<ImageView>(R.id.weatherIconView).setImageResource(images[indexes.indexOf(uri)])
+            val images = arrayOf(
+                R.drawable.a01d, R.drawable.a01n, R.drawable.a02d, R.drawable.a02n,
+                R.drawable.a03d, R.drawable.a03n, R.drawable.a04d, R.drawable.a04n,
+                R.drawable.a09d, R.drawable.a09n, R.drawable.a10d, R.drawable.a10n,
+                R.drawable.a11d, R.drawable.a11n, R.drawable.a13d, R.drawable.a13n,
+                R.drawable.a50d, R.drawable.a50n
+            )
 
-            itemView.findViewById<TextView>(R.id.rainView).text = "${(result2.lookup<Double>("daily.pop")[position + 1] * 100).roundToInt()}%"
+            val indexes = arrayOf(
+                "01d","01n","02d","02n","03d","03n","04d","04n",
+                "09d","09n","10d","10n","11d","11n","13d","13n","50d","50n"
+            )
 
-            itemView.findViewById<TextView>(R.id.temperatureMaxView).text = "${result2.lookup<Double>("daily.temp.max")[position + 1].roundToInt()}°"
-            itemView.findViewById<TextView>(R.id.temperatureMinView).text = "${result2.lookup<Double>("daily.temp.min")[position + 1].roundToInt()}°"
+            val start = position * 8
+            val end = start + 8
 
+            val tempsMax = forecast.lookup<Double>("list.main.temp_max").subList(start, end)
+            val tempsMin = forecast.lookup<Double>("list.main.temp_min").subList(start, end)
+
+            val maxTemp = tempsMax.maxOrNull()?.roundToInt() ?: 0
+            val minTemp = tempsMin.minOrNull()?.roundToInt() ?: 0
+
+            val dt = forecast.lookup<Int>("list.dt")[start]
+
+            itemView.findViewById<TextView>(R.id.hourView).text =
+                dateTime(dt, timeZone)
+
+            val icon = forecast.lookup<String>("list.weather.icon")[start]
+            itemView.findViewById<ImageView>(R.id.weatherIconView)
+                .setImageResource(images[indexes.indexOf(icon)])
+
+            val pop = forecast.lookup<Double>("list.pop")[start]
+            itemView.findViewById<TextView>(R.id.rainView).text =
+                "${(pop * 100).roundToInt()}%"
+
+            itemView.findViewById<TextView>(R.id.temperatureMaxView).text =
+                "${maxTemp}°"
+
+            itemView.findViewById<TextView>(R.id.temperatureMinView).text =
+                "${minTemp}°"
         }
 
         private fun dateTime(time: Int, zone: String, format: String = "EEE, d"): String {
