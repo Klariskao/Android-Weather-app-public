@@ -2,19 +2,27 @@ package com.example.test
 
 import java.net.URL
 
-class Weather(private var lat:String = "0", private var lng:String = "0", private var metricUnit:String = "metric") {
-    private val key:String = "&appid=c08b3f72d1bbfdc53e34c571a5cc5c86"
-    private var url:String = "https://api.openweathermap.org/data/2.5/onecall"
-//
-//    private var metricUnit:String = "metric"
-//    var temperatureUnit:String = "°C"
-//    var speedUnit:String = "m/s"
+class Weather(
+    private var lat: String = "0",
+    private var lng: String = "0",
+    private var metricUnit: String = "metric"
+) {
 
-    fun makeUrl():String {
-        return "$url?lat=$lat&lon=$lng&exclude=minutely&units=$metricUnit$key"
+    private val key = "appid=1ade6c52c486365b513da49f16926093"
+    private val weatherUrl = "https://api.openweathermap.org/data/2.5/weather"
+    private val forecastUrl = "https://api.openweathermap.org/data/2.5/forecast"
+
+
+    fun currentWeatherUrl(): String {
+        return "$weatherUrl?lat=$lat&lon=$lng&units=$metricUnit&$key"
     }
 
-    fun makeRequest(url:String):String {
+    fun forecastUrl(): String {
+        return "$forecastUrl?lat=$lat&lon=$lng&units=$metricUnit&$key"
+    }
+
+    fun makeRequest(url: String): String {
+        println(url)
         return URL(url).readText()
     }
 }
